@@ -1,0 +1,30 @@
+{
+  "name": "chatbot",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.30.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel --if-present dev",
+    "build": "pnpm -r --if-present build",
+    "test": "pnpm -r --if-present test",
+    "db:migrate": "pnpm --filter @chatbot/backend db:migrate",
+    "db:seed": "pnpm --filter @chatbot/backend db:seed",
+    "db:reset": "pnpm --filter @chatbot/backend db:reset"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "unrs-resolver"
+    ]
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  BOT
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  role      Role
+  createdAt DateTime @default(now())
+}
+
+model Rule {
+  id       Int      @id @default(autoincrement())
+  keywords String[]
+  response String
+}
