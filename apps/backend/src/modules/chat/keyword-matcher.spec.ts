@@ -15,6 +15,33 @@ describe('detectResponseFromRules', () => {
     ).toBe('Features response\n\nPricing response');
   });
 
+  it('matches whole keywords (case-insensitive) and ignores glued words / numeric suffixes', () => {
+    const priceRule = [{ keywords: ['price'], response: 'Pricing response' }];
+    const pricingRule = [
+      { keywords: ['pricing'], response: 'Pricing response' },
+    ];
+
+    expect(detectResponseFromRules('price', priceRule)).toBe(
+      'Pricing response',
+    );
+    expect(detectResponseFromRules('PRICE', priceRule)).toBe(
+      'Pricing response',
+    );
+    expect(detectResponseFromRules('price?', priceRule)).toBe(
+      'Pricing response',
+    );
+    expect(detectResponseFromRules('what is the price', priceRule)).toBe(
+      'Pricing response',
+    );
+
+    expect(detectResponseFromRules('cheapprice', priceRule)).toBeNull();
+    expect(detectResponseFromRules('price3', priceRule)).toBeNull();
+    expect(detectResponseFromRules('myprice', priceRule)).toBeNull();
+    expect(
+      detectResponseFromRules('enterprisepricingtool', pricingRule),
+    ).toBeNull();
+  });
+
   it('prioritizes greeting responses (hello/hi/hey) over other matches', () => {
     const rules = [
       { keywords: ['price', 'cost', 'pricing'], response: 'Pricing response' },

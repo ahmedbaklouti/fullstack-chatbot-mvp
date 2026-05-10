@@ -12,19 +12,30 @@ type RuleMatch = {
 // Greeting rules are treated as "high priority" even if they appear later in the message.
 const GREETING_KEYWORDS = new Set(['hello', 'hi', 'hey']);
 
-function findEarliestKeywordIndex(
-  messageLower: string,
-  keywords: string[],
-): number {
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function keywordToWholeWordRegex(keyword: string) {
+  const escapedKeyword = escapeRegExp(keyword.trim());
+  return new RegExp(
+    String.raw`(?<![\p{L}\p{N}])${escapedKeyword}(?![\p{L}\p{N}])`,
+    'iu',
+  );
+}
+
+function findEarliestKeywordIndex(message: string, keywords: string[]): number {
   let earliestIndex = -1;
 
   for (const keyword of keywords) {
-    const keywordLower = keyword.trim().toLowerCase();
-    if (!keywordLower) continue;
+    const trimmedKeyword = keyword.trim();
+    if (!trimmedKeyword) continue;
 
-    const index = messageLower.indexOf(keywordLower);
-    if (index === -1) continue;
+    const regex = keywordToWholeWordRegex(trimmedKeyword);
+    const match = regex.exec(message);
+    if (!match) continue;
 
+    const index = match.index;
     if (earliestIndex === -1 || index < earliestIndex) earliestIndex = index;
   }
 
@@ -41,12 +52,11 @@ export function detectResponsesFromRules(
   message: string,
   rules: RuleLike[],
 ): string[] {
-  const messageLower = message.toLowerCase();
   const ruleMatches: RuleMatch[] = [];
 
   for (const rule of rules) {
     const earliestKeywordIndex = findEarliestKeywordIndex(
-      messageLower,
+      message,
       rule.keywords,
     );
     if (earliestKeywordIndex === -1) continue;
