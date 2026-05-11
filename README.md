@@ -1,4 +1,4 @@
-# Fullstack Chatbot MVP (Technical Assessment)
+# Fullstack Chatbot MVP
 
 A small, interview-oriented fullstack chatbot built as a TypeScript monorepo.
 
